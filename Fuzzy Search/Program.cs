@@ -20,9 +20,11 @@ namespace Fuzzy_Search
                 string pattern = Console.ReadLine();
                 int score;
                 string fileConetent = File.ReadAllText(filePath);
-                FuzzyMatcher.FuzzyMatch(fileConetent, pattern, out score);
-                Console.WriteLine("Matched with Score [{0}]", score);
-
+                string[] paragraphs = fileConetent.Split(new string[] { Environment.NewLine },StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < paragraphs.Length; i++)
+                {
+                    score = MatchParagraph(pattern, paragraphs[i]);
+                }
                 Console.WriteLine("Do you want to continue? Y/N");
                 string answer = Console.ReadLine();
                 if (answer.ToLower() != "y")
@@ -30,5 +32,12 @@ namespace Fuzzy_Search
             }
         }
 
+        private static int MatchParagraph(string pattern, string paragraph)
+        {
+            int score;
+            FuzzyMatcher.FuzzyMatch(paragraph, pattern, out score);
+            Console.WriteLine("Paragraph '{0}' Matched with Score [{1}]", paragraph, score);
+            return score;
+        }
     }
 }
