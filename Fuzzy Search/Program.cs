@@ -21,10 +21,22 @@ namespace Fuzzy_Search
                 int score;
                 string fileConetent = File.ReadAllText(filePath);
                 string[] paragraphs = fileConetent.Split(new string[] { Environment.NewLine },StringSplitOptions.RemoveEmptyEntries);
+                Dictionary<int, int> scoreAndLocation = new Dictionary<int, int>();
                 for (int i = 0; i < paragraphs.Length; i++)
                 {
                     score = MatchParagraph(pattern, paragraphs[i]);
+                    int index = fileConetent.IndexOf(paragraphs[i]);
+                    //Assuming correct score won't be duplicated
+                    if (!scoreAndLocation.ContainsKey(score))
+                        scoreAndLocation.Add(score, index);
+
                 }
+
+                var highScore = scoreAndLocation.OrderByDescending(d => d.Key).First();
+                string newFilecontent = fileConetent.Remove(highScore.Value);
+                File.WriteAllText("result.txt", newFilecontent);
+
+                Console.WriteLine("New File was Created");
                 Console.WriteLine("Do you want to continue? Y/N");
                 string answer = Console.ReadLine();
                 if (answer.ToLower() != "y")
